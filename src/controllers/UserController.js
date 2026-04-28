@@ -1,6 +1,17 @@
 import UserService from '../services/UserService.js';
 
 class UserController {
+
+    static async index(req, res) {
+      try {
+        const users = await UserService.getAll();
+        res.json(users);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+
+
   static async store(req, res) {
     try {
       const { name, email, password } = req.body;

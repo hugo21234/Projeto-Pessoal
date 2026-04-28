@@ -1,26 +1,26 @@
-import { DataTypes, Model } from 'sequelize';
+import Sequelize, { Model } from 'sequelize';
 import bcrypt from 'bcrypt';
 
-class User extends Model {
+class User extends Model{
   static initModel(sequelize) {
     User.init({
       id: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
       name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       email: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
         validate: { isEmail: true },
       },
       password_hash: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
     }, {
@@ -30,7 +30,7 @@ class User extends Model {
       hooks: {
         beforeCreate: async (user) => {
           if (user.password_hash) {
-            user.password_hash = await bcrypt.hash(user.password_hash, 10);
+            user.password_hash = await bcrypt.hash(user.password_hash, 8);
           }
         },
       },

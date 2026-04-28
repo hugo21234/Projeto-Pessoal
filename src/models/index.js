@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import Sequelize from 'sequelize';
 import dbConfig from '../config/database.js';
 import User from './User.js';
 import Logger from './Logger.js';
@@ -12,8 +12,8 @@ class Database {
 
   init() {
     this.sequelize = new Sequelize(dbConfig);
-    models.forEach((model) => model.init(this.sequelize));
+    models.forEach((model) => model.initModel(this.sequelize));
   }
 }
-export { sequelize, User, Logger };
-export default sequelize;
+
+export default new Database();
