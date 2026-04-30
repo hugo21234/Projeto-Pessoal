@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import UserService from './UserService';
+import bcrypt from 'bcrypt';
+import UserService from './UserService.js';
 class LoginService {
 
     static async login(email, password) {

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import UserService from '../services/UserService';
-import LoginService from '../services/LoginService';
+import UserService from '../services/UserService.js';
+import LoginService from '../services/LoginService.js';
 
 class TokenController {
 

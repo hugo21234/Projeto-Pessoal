@@ -8,6 +8,9 @@ class UserService {
   static async findById(id) {
     return User.findByPk(id, { attributes: ['id', 'name', 'email', 'createdAt'] });
   }
+  static async findByEmail(email) {
+    return User.findOne({ where: { email } });
+  }
 
   static async create({ name, email, password }) {
     return User.create({ name, email, password_hash: password });
