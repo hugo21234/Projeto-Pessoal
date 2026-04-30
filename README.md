@@ -1,172 +1,86 @@
-# 🗂️ Projeto Pessoal — API REST Node.js
+# 📦 Projeto Pessoal — API REST Node.js
 
 API REST construída com **Node.js + Express + Sequelize + PostgreSQL**, seguindo arquitetura **MVC** com separação clara de responsabilidades.
 
 ---
 
-## 📦 Tecnologias
+## 🛠 Tecnologias
 
-| Tecnologia | Uso |
-|------------|-----|
-| Node.js | Runtime JavaScript |
-| Express | Framework HTTP |
-| Sequelize | ORM para PostgreSQL |
-| PostgreSQL | Banco de dados relacional |
-| bcrypt | Hash de senhas |
-| dotenv | Gerenciamento de variáveis de ambiente |
+- **Node.js** — runtime
+- **Express** — framework HTTP
+- **Sequelize** — ORM
+- **PostgreSQL** — banco de dados
+- **bcrypt** — hash de senhas
+- **jsonwebtoken** — autenticação JWT
 
 ---
 
-## 🏗️ Estrutura do Projeto
+## 🗂 Estrutura do Projeto
 
 ```
 src/
 ├── app.js                     # Inicialização do Express, middlewares e rotas
-├── server.js                  # Entry point — inicializa DB e sobe o servidor
-├── config/
-│   └── database.js            # Config do Sequelize via variáveis de ambiente
-├── database/
-│   ├── migrations/            # Migrations Sequelize
-│   └── seeders/               # Seeders Sequelize
+├── server.js                  # Entry point — sobe o servidor e conecta ao DB
+├── config/database.js         # Configuração do Sequelize
+├── database/migrations/       # Migrations das tabelas
+├── database/seeders/          # Seeders de dados iniciais
 ├── middlewares/
-│   └── logMiddleware.js       # Intercepta todas as requisições e grava log
-├── models/
-│   ├── index.js               # Instancia o Sequelize e registra todos os models
-│   ├── User.js                # Model de usuário (id, name, email, password_hash)
-│   └── Logger.js              # Model de log (method, url, timestamp)
-├── controllers/
-│   └── UserController.js      # Handlers HTTP de usuários (index, store)
-├── routes/
-│   ├── index.js               # Agrega todas as rotas da aplicação
-│   └── userRoutes.js          # Rotas do módulo de usuários
-└── services/
-    ├── UserService.js         # Regras de negócio de usuários
-    └── LogService.js          # Regras de negócio de logs
+│   ├── logMiddleware.js       # Log de todas as requisições
+│   └── LoginRequired.js       # Middleware de proteção por JWT
+├── models/                    # (User.js, Logger.js, index.js)
+├── controllers/               # (UserController.js, TokenController.js)
+├── services/                  # (UserService.js, LogService.js, LoginService.js)
+└── routes/                    # (index.js, userRoutes.js)
 ```
 
 ---
 
-## 🔄 Fluxo da Aplicação
+## 📌 Endpoints Disponíveis
 
-### Boot do Servidor
+### Usuários
 
-```mermaid
-flowchart TD
-    A[server.js] --> B[models/index.js\nInstancia Sequelize\nRegistra models]
-    B --> C[app.js\nCria Express\nAplica middlewares\nMonta rotas]
-    C --> D[Servidor escutando\nna porta 3000]
+| Método | Endpoint     | Descrição           | Body                        | Response                              |
+|--------|--------------|---------------------|-----------------------------|---------------------------------------|
+| GET    | `/users`     | Lista todos usuários| —                           | `[{ id, name, email, created_at }]`  |
+| GET    | `/users/:id` | Busca um usuário    | —                           | `{ id, name, email, created_at }`    |
+| POST   | `/users`     | Cria um usuário     | `{ name, email, password }` | `{ id, name, email, created_at }`    |
+| PUT    | `/users/:id` | Atualiza um usuário | `{ name?, email?, password? }` | `{ id, name, email, created_at }` |
+
+### Autenticação
+
+| Método | Endpoint  | Descrição  | Body                      | Response     |
+|--------|-----------|------------|---------------------------|-------------|
+| POST   | `/tokens` | Faz login  | `{ email, password }`     | `{ token }` |
+
+O token JWT retornado tem expiração de **7 dias** e deve ser enviado nos próximos requests como:
 ```
-
-### Fluxo de uma Requisição HTTP
-
-```mermaid
-flowchart LR
-    CLIENT([Cliente HTTP]) -->|Request| MW
-
-    subgraph Express App
-        MW[logMiddleware\nGrava method + url + timestamp]
-        MW --> ROUTER[routes/index.js]
-        ROUTER --> UR[userRoutes.js\nGET /users\nPOST /users]
-        UR --> UC[UserController\n.index / .store]
-        UC --> US[UserService\n.getAll / .create]
-        US --> UM[User Model\nSequelize]
-    end
-
-    subgraph Logger Flow
-        MW --> LS[LogService\n.create]
-        LS --> LM[Logger Model\nSequelize]
-        LM --> DB2[(loggers table)]
-    end
-
-    UM --> DB1[(users table)]
-    DB1 -->|Result| US
-    US -->|Result| UC
-    UC -->|JSON Response| CLIENT
-```
-
----
-
-## 📋 Endpoints Disponíveis
-
-### Users
-
-| Método | Endpoint | Descrição | Body | Response |
-|--------|----------|-----------|------|----------|
-| GET | `/users` | Lista todos os usuários | — | `[{ id, name, email, created_at }]` |
-| POST | `/users` | Cria novo usuário | `{ name, email, password }` | `{ id, name, email, created_at }` |
-
----
-
-## 🗃️ Models
-
-### User
-
-| Campo | Tipo | Restrições | Observação |
-|-------|------|-----------|------------|
-| `id` | INTEGER | PK, Auto Increment | |
-| `name` | STRING | NOT NULL | |
-| `email` | STRING | NOT NULL, UNIQUE, isEmail | |
-| `password_hash` | STRING | NOT NULL | Hash bcrypt gerado no `beforeCreate` |
-| `created_at` | DATE | Auto (timestamps) | |
-| `updated_at` | DATE | Auto (timestamps) | |
-
-### Logger
-
-| Campo | Tipo | Restrições | Observação |
-|-------|------|-----------|------------|
-| `id` | INTEGER | PK, Auto Increment | |
-| `method` | STRING | NOT NULL | Ex: `GET`, `POST` |
-| `url` | STRING | NOT NULL | URL da requisição |
-| `timestamp` | DATE | NOT NULL | Momento exato da requisição |
-| `created_at` | DATE | Auto | |
-| `updated_at` | DATE | Auto | |
-
----
-
-## 🔒 Segurança
-
-- Senhas **nunca armazenadas em texto puro** — hook `beforeCreate` aplica `bcrypt.hash(password, 8)` antes de persistir
-- Credenciais do banco **exclusivamente via variáveis de ambiente** (`.env`) — nunca hardcoded
-- O arquivo `.env` está no `.gitignore` e **não é versionado**
-
----
-
-## ⚙️ Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-PORT=3000
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=nome_do_banco
-DB_HOST=localhost
-DB_PORT=5432
-```
-
----
-
-## 🚀 Como Rodar
-
-```bash
-# Instalar dependências
-npm install
-
-# Rodar migrations
-npx sequelize-cli db:migrate
-
-# Iniciar servidor em desenvolvimento
-npm run dev
+Authorization: Bearer <token>
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Módulo de Users (CRUD base)
-- [x] Sistema de Logger automático por middleware
-- [ ] Migrations das tabelas `users` e `loggers`
-- [ ] Módulo de Habits (rastreamento de hábitos)
-- [ ] Módulo de Expenses (gestão de despesas pessoais)
-- [ ] Autenticação JWT
-- [ ] Validações de entrada (Yup / Joi)
+- ✅ Módulo de Users (CRUD completo)
+- ✅ Sistema de Logger automático (middleware)
+- ✅ Autenticação JWT (LoginService + TokenController + LoginRequired)
+- ☐ Migrations das tabelas `users` e `loggers`
+- ☐ Módulo de Habits
+- ☐ Módulo de Expenses
+- ☐ Validações de entrada (Yup/Joi)
+
+---
+
+## 🚀 Como rodar
+
+```bash
+# Instalar dependências
+npm install
+
+# Configurar variáveis de ambiente
+cp .env.example .env
+# Edite .env com suas credenciais do PostgreSQL
+
+# Rodar o servidor
+npm run dev
+```
