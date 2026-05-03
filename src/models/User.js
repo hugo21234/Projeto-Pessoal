@@ -28,8 +28,8 @@ class User extends Model{
       modelName: 'User',
       tableName: 'users',
       hooks: {
-        beforeCreate: async (user) => {
-          if (user.password_hash) {
+        beforeSave: async (user) => {
+          if (user.password_hash && user.changed('password_hash')) {
             user.password_hash = await bcrypt.hash(user.password_hash, 8);
           }
         },

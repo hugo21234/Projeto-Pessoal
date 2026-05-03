@@ -1,6 +1,3 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import UserService from '../services/UserService.js';
 import LoginService from '../services/LoginService.js';
 
 class TokenController {
@@ -11,7 +8,7 @@ class TokenController {
             const token = await LoginService.login(email, password);
             res.json({ token });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(401).json({ error: error.message });
         }
     }
 }
