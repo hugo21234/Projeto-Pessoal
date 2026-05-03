@@ -6,17 +6,16 @@ async function LoginRequired(req, res, next) {
     if (!authorization) {
       return res.status(401).json({ error: 'Token not provided' });
     }
+
 const [, token] = authorization.split(' ');
+
     try{
         const dados = jsonwebtoken.verify(token, process.env.JWT_SECRET);
         const { id, email } = dados;
-        const user = await UserService.findByEmail(email);
-        if (!user) {
-            return res.status(401).json({ error: 'User not found' });
-        }
+       
         req.user = dados;
         req.useremail = email;
-        req.userid =id;
+        req.userid = id;
         return next();
 
     }catch(error){
