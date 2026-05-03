@@ -29,8 +29,7 @@ class HabitController {
       res.status(201).json({
         id: habit.id,
         title: habit.title,
-        description: habit.description,
-        created_at: habit.createdAt,
+        description: habit.description
       });
     } catch (error) {
       res.status(400).json({ error: error.message });
