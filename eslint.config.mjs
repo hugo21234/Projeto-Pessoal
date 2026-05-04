@@ -3,6 +3,7 @@ export default [
     ignores: [
       'node_modules/**',
       '.npm-cache/**',
+      'dist/**',
     ],
   },
   {
