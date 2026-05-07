@@ -9,3 +9,5 @@ coverage/
 .vscode/
 .npm-cache/
 .prettierrc
+.vscode/
+

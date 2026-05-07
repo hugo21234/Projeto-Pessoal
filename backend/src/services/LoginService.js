@@ -9,7 +9,7 @@ class LoginService {
             throw new Error('Invalid email or password');
         }
         const token  = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7days' });
-        return token;
+        return {token, user:{ id: user.id, email: user.email } };
     }
 }
 

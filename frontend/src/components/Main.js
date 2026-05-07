@@ -1,12 +1,25 @@
 import React, { Component } from "react";
 import './Main.css';
-import { FaPlus, FaEdit, FaWindowClose } from 'react-icons/fa';
-
+import Form from './Form/Index';
+import Tarefas from './Tarefas/Index';
 export default class Main extends Component {
   state = {
     novaTarefa: '',
     tarefas: [],
     index: -1
+  }
+
+  componentDidMount() {
+    const tarefas = JSON.parse(localStorage.getItem('tarefas'));
+    if (Array.isArray(tarefas)) {
+      this.setState({ tarefas });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+   const { tarefas } = this.state;
+   if (tarefas === prevState.tarefas) return;
+   localStorage.setItem('tarefas', JSON.stringify(tarefas));
   }
 
   HandleSubmit = (event) => {
@@ -58,37 +71,16 @@ export default class Main extends Component {
       <div className="main">
         <h1>Lista de Tarefas</h1>
 
-        <form onSubmit={this.HandleSubmit} action="#" className="form">
-          <input
-            onChange={this.HandleInputChange}
-            type="text"
-            placeholder="Nova tarefa..."
-            value={novaTarefa}
-          />
-
-          <button type="submit">
-            <FaPlus />
-          </button>
-        </form>
-
-        <ul className="tarefas">
-          {tarefas.map((tarefa, idx) => (
-            <li key={idx}>
-              {tarefa}
-              <span>
-                <FaEdit
-                  className="edit"
-                  onClick={(e) => this.handleEdit(e, idx)}
-                />
-                <FaWindowClose
-                  className="delete"
-                  onClick={(e) => this.handleDelete(e, idx)}
-                />
-              </span>
-            </li>
-          ))}
-        </ul>
-
+        <Form
+        handleSubmit={this.HandleSubmit}
+        handleChange={this.HandleInputChange}
+        novaTarefa={novaTarefa}
+        />
+        <Tarefas
+          tarefas={tarefas}
+          handleEdit={this.handleEdit}
+          handleDelete={this.handleDelete}
+        />
       </div>
     );
   }
