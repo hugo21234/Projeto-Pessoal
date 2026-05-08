@@ -9,9 +9,10 @@ dotenv.config();
 
 
 const whiteList = [
-  'http://localhost:3000',
+ 'http://localhost:3000',
   'http://localhost:3333',
   'http://137.131.204.143:3333',
+  'http://137.131.204.143'
 ]
 
 const corsOptions = {
