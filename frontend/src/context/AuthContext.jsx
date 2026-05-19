@@ -9,17 +9,27 @@ export default function AuthProvider({children}){
     user: null,
     })
    async function login(email, password) {
+       try{
         const response = await fetch('http://137.131.204.143:3333/tokens', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email, password }),
         });
+        if (!response.ok) {
+          throw new Error('Login failed');
+        }else{
         const { token, user } = await response.json();
-        setAuth({ token, user });
-      };
 
+        setAuth({ token, user });
+        }
+
+      } catch (error) {
+        console.log('Error during login:', error);
+        throw new Error('Login failed');
+      }
+    };
 
       return (
         <Auth.Provider value={{ auth, login }}>
