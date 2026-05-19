@@ -33,11 +33,11 @@ class App {
   }
 
   middleware() {
+    this.app.use(cors(corsOptions));
+    this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
     this.app.use(LogMiddleware.handle);
-    this.app.use(cors(corsOptions));
-    this.app.use(helmet());
   }
 
   routes() {
